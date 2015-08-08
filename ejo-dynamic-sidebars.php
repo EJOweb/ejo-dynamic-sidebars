@@ -3,10 +3,13 @@
  * Plugin Name: EJO Dynamic Sidebars
  * Plugin URI: http://github.com/ejoweb/ejo-dynamic-sidebars
  * Description: Give user the option to chose sidebar on per-page base.
- * Version: 0.2.0
+ * Version: 0.2.1
  * Author: Erik Joling
  * Author URI: http://www.ejoweb.nl/
  * License: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ *
+ * GitHub Plugin URI: https://github.com/EJOweb/ejo-dynamic-sidebars
+ * GitHub Branch:     master
  *
  * Minimum PHP version: 5.3.0
  */
@@ -17,7 +20,7 @@
 final class EJO_Dynamic_Sidebars 
 {
         //* Version number of this plugin
-    public static $version = '0.2.0';
+    public static $version = '0.2.1';
 
     //* Holds the instance of this class.
     protected static $_instance = null;
