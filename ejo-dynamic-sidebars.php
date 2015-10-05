@@ -83,20 +83,22 @@ final class EJO_Dynamic_Sidebars
 			<select name="ejo-dynamic-sidebar">
 				<option value="no-sidebar">-- Geen Zijbalk --</option>
 
-		<?php
-			$selected_sidebar = get_post_meta( $post->ID, '_ejo-dynamic-sidebar', true );
-			$selected_sidebar = (!empty($selected_sidebar)) ? $selected_sidebar : 'sidebar-primary';
-			
-			foreach ($wp_registered_sidebars as $sidebar_id => $sidebar) {
+				<?php
 
-				//* if registered widget-area has 'sidebar' in it's name
-				if (strpos($sidebar_id,'sidebar') !== false) {
+				$selected_sidebar = get_post_meta( $post->ID, '_ejo-dynamic-sidebar', true );
+				$selected_sidebar = (!empty($selected_sidebar)) ? $selected_sidebar : 'sidebar-primary';
+				
+				foreach ($wp_registered_sidebars as $sidebar_id => $sidebar) {
 
-					$selected = selected($sidebar_id, $selected_sidebar, false);
-					echo '<option value="' . $sidebar_id . '" ' . $selected . '>' . $sidebar['name'] . '</option>';
-				}							
-			}
-		?>
+					//* if registered widget-area has 'sidebar' in it's name
+					if (strpos($sidebar_id,'sidebar') !== false) {
+
+						$selected = selected($sidebar_id, $selected_sidebar, false);
+						echo '<option value="' . $sidebar_id . '" ' . $selected . '>' . $sidebar['name'] . '</option>';
+					}							
+				}
+
+				?>
 
 			</select>
 		</p>
@@ -146,7 +148,6 @@ final class EJO_Dynamic_Sidebars
 		 * 1. Genesis - if( 'genesis' == get_option( 'template' ) ) {}
 		 * 2. Hybrid - if ( class_exists( 'Hybrid' ) ) {}
 		 * 3. Option default by this plugin
-		 * 0. Other...
 		 **/
 		$selected_sidebar = get_post_meta( $post_id, '_ejo-dynamic-sidebar', true );
 
@@ -157,10 +158,6 @@ final class EJO_Dynamic_Sidebars
 				$selected_sidebar = 'sidebar';
 			}
 			elseif ( class_exists( 'Hybrid' ) ) {
-				$selected_sidebar = 'sidebar-primary';
-			}
-			elseif ( false ) {
-				//* Get option default sidebar
 				$selected_sidebar = 'sidebar-primary';
 			}
 			else {
