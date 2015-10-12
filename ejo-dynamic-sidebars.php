@@ -3,7 +3,7 @@
  * Plugin Name: EJO Dynamic Sidebars
  * Plugin URI: http://github.com/ejoweb/ejo-dynamic-sidebars
  * Description: Give user the option to chose sidebar on per-page base.
- * Version: 0.2.1
+ * Version: 0.3
  * Author: Erik Joling
  * Author URI: http://www.ejoweb.nl/
  * License: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
@@ -20,7 +20,7 @@
 final class EJO_Dynamic_Sidebars 
 {
         //* Version number of this plugin
-    public static $version = '0.2.1';
+    public static $version = '0.3';
 
     //* Holds the instance of this class.
     protected static $_instance = null;
@@ -50,9 +50,6 @@ final class EJO_Dynamic_Sidebars
 
         add_action( 'add_meta_boxes', array( $this, 'add_dynamic_sidebar_metabox' ) );
 		add_action( 'pre_post_update', array( $this, 'save_dynamic_sidebar' ) ); // save the custom fields. Save_post hook doesn't seem to be called when not changing the post
-
-        //* Test
-        // write_log( self::$dir );
     }
 
     //* Defines the directory path and URI for the plugin.
@@ -81,13 +78,11 @@ final class EJO_Dynamic_Sidebars
 
 		<p>
 			<select name="ejo-dynamic-sidebar">
-				<option value="no-sidebar">-- Geen Zijbalk --</option>
-
+				<option value="">--Standaard--</option>
 				<?php
 
 				$selected_sidebar = get_post_meta( $post->ID, '_ejo-dynamic-sidebar', true );
-				$selected_sidebar = (!empty($selected_sidebar)) ? $selected_sidebar : 'sidebar-primary';
-				
+
 				foreach ($wp_registered_sidebars as $sidebar_id => $sidebar) {
 
 					//* if registered widget-area has 'sidebar' in it's name
@@ -98,6 +93,7 @@ final class EJO_Dynamic_Sidebars
 					}							
 				}
 
+				/* <option value="no-sidebar" <?php selected('no-sidebar', $selected_sidebar); ?>>-- Geen Zijbalk --</option>*/
 				?>
 
 			</select>
@@ -131,8 +127,10 @@ final class EJO_Dynamic_Sidebars
 
 		$meta_key = '_ejo-dynamic-sidebar';
 
-		if ( isset( $_POST['ejo-dynamic-sidebar'] ) )
+		if ( !empty( $_POST['ejo-dynamic-sidebar'] ) )
 			update_post_meta( $post_id, $meta_key, $_POST['ejo-dynamic-sidebar'] );
+		else
+			delete_post_meta( $post_id, $meta_key );
 	}
 
 	//* Get sidebar
@@ -143,27 +141,29 @@ final class EJO_Dynamic_Sidebars
 		else 
 			$post_id = get_the_ID();
 
+		$selected_sidebar = get_post_meta( $post_id, '_ejo-dynamic-sidebar', true );
+
+		//* Always return selected sidebar, also if empty. Let theme provide fallback sidebar so it's not dependant on this plugins fallback
+
 		/**
 		 * Get Sidebars for different frameworks
 		 * 1. Genesis - if( 'genesis' == get_option( 'template' ) ) {}
 		 * 2. Hybrid - if ( class_exists( 'Hybrid' ) ) {}
 		 * 3. Option default by this plugin
 		 **/
-		$selected_sidebar = get_post_meta( $post_id, '_ejo-dynamic-sidebar', true );
-
 		//* If no sidebar is selected, get default sidebar
-		if (empty($selected_sidebar)) {
+		// if (empty($selected_sidebar)) {
 
-			if ( 'genesis' == get_option( 'template' ) ) {
-				$selected_sidebar = 'sidebar';
-			}
-			elseif ( class_exists( 'Hybrid' ) ) {
-				$selected_sidebar = 'sidebar-primary';
-			}
-			else {
-				$selected_sidebar = 'sidebar-primary';
-			}
-		} 
+		// 	if ( 'genesis' == get_option( 'template' ) ) {
+		// 		$selected_sidebar = 'sidebar';
+		// 	}
+		// 	elseif ( class_exists( 'Hybrid' ) ) {
+		// 		$selected_sidebar = 'sidebar-primary';
+		// 	}
+		// 	else {
+		// 		$selected_sidebar = 'sidebar-primary';
+		// 	}
+		// }
 
 		return $selected_sidebar;
 	}
