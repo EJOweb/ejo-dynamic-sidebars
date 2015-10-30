@@ -3,7 +3,7 @@
  * Plugin Name: EJO Dynamic Sidebars
  * Plugin URI: http://github.com/ejoweb/ejo-dynamic-sidebars
  * Description: Give user the option to chose sidebar on per-page base.
- * Version: 0.3
+ * Version: 0.3.1
  * Author: Erik Joling
  * Author URI: http://www.ejoweb.nl/
  * License: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
@@ -20,7 +20,7 @@
 final class EJO_Dynamic_Sidebars 
 {
         //* Version number of this plugin
-    public static $version = '0.3';
+    public static $version = '0.3.1';
 
     //* Holds the instance of this class.
     protected static $_instance = null;
@@ -143,27 +143,7 @@ final class EJO_Dynamic_Sidebars
 
 		$selected_sidebar = get_post_meta( $post_id, '_ejo-dynamic-sidebar', true );
 
-		//* Always return selected sidebar, also if empty. Let theme provide fallback sidebar so it's not dependant on this plugins fallback
-
-		/**
-		 * Get Sidebars for different frameworks
-		 * 1. Genesis - if( 'genesis' == get_option( 'template' ) ) {}
-		 * 2. Hybrid - if ( class_exists( 'Hybrid' ) ) {}
-		 * 3. Option default by this plugin
-		 **/
-		//* If no sidebar is selected, get default sidebar
-		// if (empty($selected_sidebar)) {
-
-		// 	if ( 'genesis' == get_option( 'template' ) ) {
-		// 		$selected_sidebar = 'sidebar';
-		// 	}
-		// 	elseif ( class_exists( 'Hybrid' ) ) {
-		// 		$selected_sidebar = 'sidebar-primary';
-		// 	}
-		// 	else {
-		// 		$selected_sidebar = 'sidebar-primary';
-		// 	}
-		// }
+		//* Let theme provide fallback sidebar so it's not dependant on this plugins fallback
 
 		return $selected_sidebar;
 	}
