@@ -3,7 +3,7 @@
  * Plugin Name: EJO Dynamic Sidebars
  * Plugin URI: http://github.com/ejoweb/ejo-dynamic-sidebars
  * Description: Give user the option to chose sidebar on per-page base.
- * Version: 0.3.1
+ * Version: 0.3.2
  * Author: Erik Joling
  * Author URI: http://www.ejoweb.nl/
  * License: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
@@ -20,7 +20,7 @@
 final class EJO_Dynamic_Sidebars 
 {
         //* Version number of this plugin
-    public static $version = '0.3.1';
+    public static $version = '0.3.2';
 
     //* Holds the instance of this class.
     protected static $_instance = null;
@@ -64,6 +64,20 @@ final class EJO_Dynamic_Sidebars
 	public function add_dynamic_sidebar_metabox() 
 	{
 		add_meta_box( 'ejo_dynamic_sidebar_metabox', 'Kies de zijbalk', array( $this, 'render_dynamic_sidebar_metabox' ), 'page', 'side', 'default' );
+		add_meta_box( 'ejo_dynamic_sidebar_metabox', 'Kies de zijbalk', array( $this, 'render_dynamic_sidebar_metabox' ), 'post', 'side', 'default' );
+
+		//* Also add metabox for custom post-types
+		$args = array(
+			'public'   => true,
+			'_builtin' => false
+		);
+
+		$post_types = get_post_types( $args ); 
+
+		foreach ( $post_types  as $post_type ) {
+			add_meta_box( 'ejo_dynamic_sidebar_metabox', 'Kies de zijbalk', array( $this, 'render_dynamic_sidebar_metabox' ), $post_type, 'side', 'default' );
+		}
+
 	}
 
 	//* The dynamic sidebar metabox
