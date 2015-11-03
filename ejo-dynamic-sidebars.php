@@ -3,7 +3,7 @@
  * Plugin Name: EJO Dynamic Sidebars
  * Plugin URI: http://github.com/ejoweb/ejo-dynamic-sidebars
  * Description: Give user the option to chose sidebar on per-page base.
- * Version: 0.3.2
+ * Version: 0.4
  * Author: Erik Joling
  * Author URI: http://www.ejoweb.nl/
  * License: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
@@ -19,8 +19,8 @@
  */
 final class EJO_Dynamic_Sidebars 
 {
-        //* Version number of this plugin
-    public static $version = '0.3.2';
+    //* Version number of this plugin
+    public static $version = '0.4';
 
     //* Holds the instance of this class.
     protected static $_instance = null;
@@ -48,8 +48,12 @@ final class EJO_Dynamic_Sidebars
         //* Setup
         self::setup();
 
+        //* Add Metabox
         add_action( 'add_meta_boxes', array( $this, 'add_dynamic_sidebar_metabox' ) );
 		add_action( 'pre_post_update', array( $this, 'save_dynamic_sidebar' ) ); // save the custom fields. Save_post hook doesn't seem to be called when not changing the post
+
+		//* Add options to ejo_theme_options
+		add_action( 'ejo_theme_options', array( $this, 'ejo_dynamic_sidebar_options' ) );
     }
 
     //* Defines the directory path and URI for the plugin.
@@ -66,14 +70,13 @@ final class EJO_Dynamic_Sidebars
 		add_meta_box( 'ejo_dynamic_sidebar_metabox', 'Kies de zijbalk', array( $this, 'render_dynamic_sidebar_metabox' ), 'page', 'side', 'default' );
 		add_meta_box( 'ejo_dynamic_sidebar_metabox', 'Kies de zijbalk', array( $this, 'render_dynamic_sidebar_metabox' ), 'post', 'side', 'default' );
 
-		//* Also add metabox for custom post-types
-		$args = array(
+		//* Get public custom post-types
+		$post_types = get_post_types( array(
 			'public'   => true,
 			'_builtin' => false
-		);
+		)); 
 
-		$post_types = get_post_types( $args ); 
-
+		//* Add metabox for each custom post type
 		foreach ( $post_types  as $post_type ) {
 			add_meta_box( 'ejo_dynamic_sidebar_metabox', 'Kies de zijbalk', array( $this, 'render_dynamic_sidebar_metabox' ), $post_type, 'side', 'default' );
 		}
@@ -150,16 +153,35 @@ final class EJO_Dynamic_Sidebars
 	//* Get sidebar
 	public static function get_sidebar_id()
 	{
-		if (is_home()) 
+		if ( is_home() && !empty(get_option( 'page_for_posts' )) ) 
 			$post_id = get_option( 'page_for_posts' ); //Blogpage
 		else 
 			$post_id = get_the_ID();
 
+		//* Check if there is a sidebar selected for this post
 		$selected_sidebar = get_post_meta( $post_id, '_ejo-dynamic-sidebar', true );
+
+		//* If no sidebar selected, get sidebar based on post-type
+		if ( empty($selected_sidebar) ) {
+
+			//* Get default sidebars of post-types
+			$ejo_post_type_sidebar = get_option( 'ejo_dynamic_sidebars', '' );
+
+			//* Get post-type
+			$post_type = get_post_type();
+
+			//* Get sidebar based on post-type
+			$selected_sidebar = isset($ejo_post_type_sidebar[$post_type]) ? $ejo_post_type_sidebar[$post_type] : '';
+		}
 
 		//* Let theme provide fallback sidebar so it's not dependant on this plugins fallback
 
 		return $selected_sidebar;
+	}
+
+	public function ejo_dynamic_sidebar_options()
+	{
+		require_once( self::$dir . 'includes/option-page.php');
 	}
 
 }
